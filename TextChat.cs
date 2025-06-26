@@ -13,6 +13,8 @@ public static class GUIManagerTextChat {
     static Canvas textChatCanvas;
     static TMP_InputField inputField;
 
+    static RectTransform chatLogViewportTransform;
+
     public static bool isBlockingInput = false;
 
     [HarmonyPostfix]
@@ -34,28 +36,63 @@ public static class GUIManagerTextChat {
         canvasObj.transform.SetParent(guiManager.transform);
         textChatCanvas = canvasObj.AddComponent<Canvas>();
         textChatCanvas.renderMode = RenderMode.ScreenSpaceCamera;
-        var imageObj = new GameObject("Image");
-        var rectTransform = imageObj.AddComponent<RectTransform>();
-        rectTransform.SetParent(canvasObj.transform,false);
-        rectTransform.anchorMax = Vector2.zero;
-        rectTransform.anchorMin = Vector2.zero;
-        rectTransform.pivot = Vector2.zero;
-        rectTransform.anchoredPosition = new Vector2(30,100);
-        rectTransform.sizeDelta = new Vector2(350,250);
+        var baseObj = new GameObject("Image");
+        var baseTransform = baseObj.AddComponent<RectTransform>();
+        baseTransform.SetParent(canvasObj.transform,false);
+        baseTransform.anchorMax = Vector2.zero;
+        baseTransform.anchorMin = Vector2.zero;
+        baseTransform.pivot = Vector2.zero;
+        baseTransform.anchoredPosition = new Vector2(30,100);
+        baseTransform.sizeDelta = new Vector2(350,250);
 
         inputField = CreateInputField();
         var inputFieldTransform = (RectTransform)inputField.transform;
-        inputFieldTransform.anchorMin = Vector2.zero;
-        inputFieldTransform.anchorMax = new Vector2(1,1);
         inputFieldTransform.pivot = new Vector2(0.5f,0);
-        inputFieldTransform.offsetMin = Vector2.zero;
-        inputFieldTransform.offsetMax = Vector2.zero;
-        inputFieldTransform.SetParent(rectTransform,false);
+        inputFieldTransform.anchorMin = new Vector2(0,0);
+        inputFieldTransform.anchorMax = new Vector2(1,0);
+        inputFieldTransform.offsetMin = new Vector2(0,0);
+        inputFieldTransform.offsetMax = new Vector2(0,30);
+        inputFieldTransform.SetParent(baseTransform,false);
 
-        var bgImage = imageObj.AddComponent<Image>();
+        var bgImage = baseObj.AddComponent<Image>();
         bgImage.color = new Color(0,0,0,0.6f);
 
-        inputField.onEndEdit.AddListener((e) => isBlockingInput = false);
+        var chatLogHolderObj = new GameObject("ChatLog");
+        var chatLogHolderTransform = chatLogHolderObj.AddComponent<RectTransform>();
+        chatLogHolderTransform.SetParent(baseTransform,false);
+        chatLogHolderTransform.anchorMin = Vector2.zero;
+        chatLogHolderTransform.anchorMax = Vector2.one;
+        chatLogHolderTransform.offsetMin = new Vector2(0,30);
+        chatLogHolderTransform.offsetMax = Vector2.zero;
+        chatLogHolderObj.AddComponent<RectMask2D>();
+
+        var chatLogViewportObj = new GameObject("Viewport");
+        chatLogViewportTransform = chatLogViewportObj.AddComponent<RectTransform>();
+        chatLogViewportTransform.SetParent(chatLogHolderTransform,false);
+        chatLogViewportTransform.pivot = new Vector2(0.5f,0);
+        chatLogViewportTransform.anchorMin = Vector2.zero;
+        chatLogViewportTransform.anchorMax = new Vector2(1,0);
+        chatLogViewportTransform.offsetMin = Vector2.zero;
+        chatLogViewportTransform.offsetMax = new Vector2(0,5000);
+
+        var chatLogLayout = chatLogViewportObj.AddComponent<VerticalLayoutGroup>();
+        chatLogLayout.childControlWidth = true;
+        chatLogLayout.childControlHeight = false;
+        chatLogLayout.childForceExpandWidth = true;
+        chatLogLayout.childForceExpandHeight = false;
+        chatLogLayout.childScaleWidth = false;
+        chatLogLayout.childScaleHeight = false;
+        chatLogLayout.childAlignment = TextAnchor.LowerCenter;
+
+        inputField.onSubmit.AddListener((e) => {
+            inputField.text = "";
+            AddMessage(e);
+        });
+
+        inputField.onEndEdit.AddListener((e) => {
+            EventSystem.current.SetSelectedGameObject(null);
+            isBlockingInput = false;
+        });
     }
 
     static TMP_InputField CreateInputField() {
@@ -65,7 +102,7 @@ public static class GUIManagerTextChat {
 
         var inputFieldGraphic = inputField.gameObject.AddComponent<Image>();
         inputField.targetGraphic = inputFieldGraphic;
-        inputFieldGraphic.color = new Color(0,0,0,0);
+        inputFieldGraphic.color = new Color(1,1,1,0.3f);
 
         var textAreaObj = new GameObject("Text Area");
         var textAreaTransform = textAreaObj.AddComponent<RectTransform>();
@@ -105,11 +142,17 @@ public static class GUIManagerTextChat {
         var text = textObj.AddComponent<TextMeshProUGUI>();
         text.text = "New Text";
         text.fontSize = 16;
+        text.horizontalAlignment = HorizontalAlignmentOptions.Left;
+        text.verticalAlignment = VerticalAlignmentOptions.Middle;
 
         return text;
     }
 
     static void AddMessage(string message) {
-        
+        if (chatLogViewportTransform != null) {
+            var tmpText = CreateText(chatLogViewportTransform);
+            tmpText.text = message;
+            ((RectTransform)tmpText.transform).sizeDelta = new Vector2(0,tmpText.preferredHeight);
+        }
     }
 }
