@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Reflection;
 using HarmonyLib;
 using PeakTextChat;
@@ -10,12 +11,16 @@ namespace PeakTextChat;
 
 [HarmonyPatch(typeof(GUIManager),nameof(GUIManager.UpdateItemPrompts))]
 public static class GUIManagerTextChat {
+    static int maxMessages = 30;
+
     static Canvas textChatCanvas;
     static TMP_InputField inputField;
 
     static RectTransform chatLogViewportTransform;
 
     public static bool isBlockingInput = false;
+
+    static List<ChatMessage> messages = new List<ChatMessage>();
 
     [HarmonyPostfix]
     public static void Postfix() {
@@ -42,7 +47,7 @@ public static class GUIManagerTextChat {
         baseTransform.anchorMax = Vector2.zero;
         baseTransform.anchorMin = Vector2.zero;
         baseTransform.pivot = Vector2.zero;
-        baseTransform.anchoredPosition = new Vector2(30,100);
+        baseTransform.anchoredPosition = new Vector2(30,120);
         baseTransform.sizeDelta = new Vector2(350,250);
 
         inputField = CreateInputField();
@@ -153,6 +158,24 @@ public static class GUIManagerTextChat {
             var tmpText = CreateText(chatLogViewportTransform);
             tmpText.text = message;
             ((RectTransform)tmpText.transform).sizeDelta = new Vector2(0,tmpText.preferredHeight);
+            var chatMessage = new ChatMessage(message,tmpText.gameObject);
+            messages.Add(chatMessage);
+            if (messages.Count > maxMessages) {
+                var firstMessage = messages[0];
+                if (firstMessage != null && firstMessage.textObj != null) {
+                    GameObject.Destroy(firstMessage.textObj);
+                }
+                messages.RemoveAt(0);
+            }
+        }
+    }
+
+    public class ChatMessage {
+        public string message;
+        public GameObject textObj;
+        public ChatMessage(string message,GameObject textObject) {
+            this.message = message;
+            this.textObj = textObject;
         }
     }
 }
