@@ -1,33 +1,36 @@
+using System;
 using System.Collections.Generic;
-using System.Reflection;
-using HarmonyLib;
-using PeakTextChat;
-using Photon.Pun;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using UnityEngine.UI.ProceduralImage;
 
 namespace PeakTextChat;
 
-[HarmonyPatch(typeof(GUIManager),nameof(GUIManager.UpdateItemPrompts))]
-public static class GUIManagerTextChat {
-    static int maxMessages = 30;
+public class TextChatDisplay : MonoBehaviour {
+    int maxMessages = 30;
+    Canvas textChatCanvas;
+    TMP_InputField inputField;
+    RectTransform chatLogViewportTransform;
 
-    static Canvas textChatCanvas;
-    static TMP_InputField inputField;
+    Color offWhite = new Color(0.87f, 0.85f, 0.76f);
 
-    static RectTransform chatLogViewportTransform;
+    List<ChatMessage> messages = new List<ChatMessage>();
 
-    public static bool isBlockingInput = false;
+    public bool isBlockingInput = false;
 
-    static List<ChatMessage> messages = new List<ChatMessage>();
+    public static TextChatDisplay instance;
 
-    [HarmonyPostfix]
-    public static void Postfix() {
-        if (textChatCanvas == null && GUIManager.instance != null) {
-            SetupChatGUI();
-        }
+    void Awake() {
+        instance = this;
+    }
+
+    void Start() {
+        SetupChatGUI();
+    }
+
+    void Update() {
         if (Input.GetKeyDown(KeyCode.Slash) && inputField != null && EventSystem.current != null && !GUIManager.instance.windowBlockingInput) {
             EventSystem.current.SetSelectedGameObject(inputField.gameObject, null);
             inputField.OnPointerClick(new PointerEventData(EventSystem.current));
@@ -35,16 +38,14 @@ public static class GUIManagerTextChat {
         }
     }
 
-    static void SetupChatGUI() {
+    void SetupChatGUI() {
         var guiManager = GUIManager.instance;
         
-        var canvasObj = new GameObject("TextChatCanvas");
-        canvasObj.transform.SetParent(guiManager.transform);
-        textChatCanvas = canvasObj.AddComponent<Canvas>();
+        textChatCanvas = this.gameObject.AddComponent<Canvas>();
         textChatCanvas.renderMode = RenderMode.ScreenSpaceCamera;
         var baseObj = new GameObject("Image");
         var baseTransform = baseObj.AddComponent<RectTransform>();
-        baseTransform.SetParent(canvasObj.transform,false);
+        baseTransform.SetParent(this.transform,false);
         baseTransform.anchorMax = Vector2.zero;
         baseTransform.anchorMin = Vector2.zero;
         baseTransform.pivot = Vector2.zero;
@@ -60,8 +61,10 @@ public static class GUIManagerTextChat {
         inputFieldTransform.offsetMax = new Vector2(0,30);
         inputFieldTransform.SetParent(baseTransform,false);
 
-        var bgImage = baseObj.AddComponent<Image>();
+        var bgImage = baseObj.AddComponent<ProceduralImage>();
         bgImage.color = new Color(0,0,0,0.6f);
+        // bgImage.BorderWidth = 3;
+        bgImage.SetModifierType<UniformModifier>().Radius = 5;
 
         var chatLogHolderObj = new GameObject("ChatLog");
         var chatLogHolderTransform = chatLogHolderObj.AddComponent<RectTransform>();
@@ -147,16 +150,14 @@ public static class GUIManagerTextChat {
         
         var text = textObj.AddComponent<TextMeshProUGUI>();
         text.text = "New Text";
-        text.fontSize = 16;
+        text.fontSize = 18;
         text.horizontalAlignment = HorizontalAlignmentOptions.Left;
         text.verticalAlignment = VerticalAlignmentOptions.Middle;
-
-        
 
         return text;
     }
 
-    public static void AddMessage(string message) {
+    public void AddMessage(string message) {
         if (chatLogViewportTransform != null) {
             var tmpText = CreateText(chatLogViewportTransform);
             tmpText.text = message;

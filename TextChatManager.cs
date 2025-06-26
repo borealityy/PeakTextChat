@@ -5,7 +5,7 @@ using UnityEngine;
 
 namespace PeakTextChat;
 
-public class TextChatManager: MonoBehaviour {
+public class TextChatManager : MonoBehaviour {
     public static TextChatManager instance;
     Character character;
 
@@ -16,7 +16,9 @@ public class TextChatManager: MonoBehaviour {
 
     [PunRPC]
     public void ReceiveChatMessage(string senderName,string message) {
-        GUIManagerTextChat.AddMessage($"[{senderName}]: {message}");
+        if (TextChatDisplay.instance != null) {
+            TextChatDisplay.instance.AddMessage($"[{senderName}]: {message}");
+        }
     }
 
     public void SendChatMessage(string message) {

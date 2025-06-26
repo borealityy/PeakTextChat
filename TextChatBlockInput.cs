@@ -8,7 +8,7 @@ public static class TextChatBlockInput {
     private static readonly MethodInfo windowBlockingInput = AccessTools.PropertySetter(typeof(GUIManager),"windowBlockingInput");
     [HarmonyPostfix]
     public static void Postfix() {
-        if (GUIManagerTextChat.isBlockingInput) {
+        if (TextChatDisplay.instance?.isBlockingInput == true) {
             windowBlockingInput?.Invoke(GUIManager.instance,[ true ]);
         }
     }
