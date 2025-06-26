@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using HarmonyLib;
 using PeakTextChat;
+using Photon.Pun;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -91,7 +92,7 @@ public static class GUIManagerTextChat {
 
         inputField.onSubmit.AddListener((e) => {
             inputField.text = "";
-            AddMessage(e);
+            TextChatManager.instance?.SendChatMessage(e);
         });
 
         inputField.onEndEdit.AddListener((e) => {
@@ -150,10 +151,12 @@ public static class GUIManagerTextChat {
         text.horizontalAlignment = HorizontalAlignmentOptions.Left;
         text.verticalAlignment = VerticalAlignmentOptions.Middle;
 
+        
+
         return text;
     }
 
-    static void AddMessage(string message) {
+    public static void AddMessage(string message) {
         if (chatLogViewportTransform != null) {
             var tmpText = CreateText(chatLogViewportTransform);
             tmpText.text = message;

@@ -37,5 +37,11 @@
     <Reference Include="Unity.TextMeshPro">
       <HintPath>$(PeakDir)\PEAK_Data\Managed\Unity.TextMeshPro.dll</HintPath>
     </Reference>
+    <Reference Include="PhotonUnityNetworking">
+      <HintPath>$(PeakDir)\PEAK_Data\Managed\PhotonUnityNetworking.dll</HintPath>
+    </Reference>
+    <Reference Include="PhotonRealtime">
+      <HintPath>$(PeakDir)\PEAK_Data\Managed\PhotonRealtime.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

@@ -17,6 +17,8 @@ public class Plugin : BaseUnityPlugin
         Logger.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} is loaded!");
 
         Harmony harmony = new Harmony("com.borealityy.peaktextchat");
-        harmony.PatchAll();
+        harmony.PatchAll(typeof(TextChatPatch));
+        harmony.PatchAll(typeof(GUIManagerTextChat));
+        harmony.PatchAll(typeof(TextChatBlockInput));
     }
 }
