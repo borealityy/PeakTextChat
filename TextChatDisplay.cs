@@ -73,21 +73,33 @@ public class TextChatDisplay : MonoBehaviour {
         inputFieldTransform.pivot = new Vector2(0.5f,0);
         inputFieldTransform.anchorMin = new Vector2(0,0);
         inputFieldTransform.anchorMax = new Vector2(1,0);
-        inputFieldTransform.offsetMin = new Vector2(0,0);
-        inputFieldTransform.offsetMax = new Vector2(0,30);
+        inputFieldTransform.offsetMin = new Vector2(5,5);
+        inputFieldTransform.offsetMax = new Vector2(-5,30);
         inputFieldTransform.SetParent(baseTransform,false);
 
-        var bgImage = this.gameObject.AddComponent<ProceduralImage>();
-        bgImage.color = new Color(0,0,0,0.6f);
+        // var bgImage = this.gameObject.AddComponent<ProceduralImage>();
+        // bgImage.color = new Color(0,0,0,0.6f);
         // bgImage.BorderWidth = 3;
-        bgImage.SetModifierType<UniformModifier>().Radius = 5;
+        // bgImage.SetModifierType<UniformModifier>().Radius = 5;
+
+        var shadow = new GameObject("Shadow");
+        shadow.transform.SetParent(baseTransform,false);
+        var shadowTransform = shadow.AddComponent<RectTransform>();
+        shadowTransform.anchorMin = Vector2.zero;
+        shadowTransform.anchorMax = Vector2.one;
+        shadowTransform.offsetMin = Vector2.zero;
+        shadowTransform.offsetMax = Vector2.zero;
+        var shadowImg = shadow.AddComponent<ProceduralImage>();
+        shadowImg.color = new Color(0,0,0,0.3f);
+        shadowImg.FalloffDistance = 10;
+        shadowImg.SetModifierType<UniformModifier>().Radius = 10;
 
         var chatLogHolderObj = new GameObject("ChatLog");
         var chatLogHolderTransform = chatLogHolderObj.AddComponent<RectTransform>();
         chatLogHolderTransform.SetParent(baseTransform,false);
         chatLogHolderTransform.anchorMin = Vector2.zero;
         chatLogHolderTransform.anchorMax = Vector2.one;
-        chatLogHolderTransform.offsetMin = new Vector2(0,30);
+        chatLogHolderTransform.offsetMin = new Vector2(0,35);
         chatLogHolderTransform.offsetMax = Vector2.zero;
         chatLogHolderObj.AddComponent<RectMask2D>();
 
@@ -108,6 +120,8 @@ public class TextChatDisplay : MonoBehaviour {
         chatLogLayout.childScaleWidth = false;
         chatLogLayout.childScaleHeight = false;
         chatLogLayout.childAlignment = TextAnchor.LowerCenter;
+        chatLogLayout.padding = new RectOffset(7,7,5,5);
+        chatLogLayout.spacing = 2;
 
         inputField.onSubmit.AddListener((e) => {
             inputField.text = "";
@@ -118,16 +132,29 @@ public class TextChatDisplay : MonoBehaviour {
             EventSystem.current.SetSelectedGameObject(null);
             isBlockingInput = false;
         });
+
+        var border = new GameObject("Border");
+        border.transform.SetParent(baseTransform,false);
+        var borderTransform = border.AddComponent<RectTransform>();
+        borderTransform.anchorMin = Vector2.zero;
+        borderTransform.anchorMax = Vector2.one;
+        borderTransform.offsetMin = Vector2.zero;
+        borderTransform.offsetMax = Vector2.zero;
+        var borderImg = shadow.AddComponent<ProceduralImage>();
+        borderImg.color = offWhite;
+        borderImg.BorderWidth = 2;
+        borderImg.SetModifierType<UniformModifier>().Radius = 10;
     }
 
-    static TMP_InputField CreateInputField() {
+    TMP_InputField CreateInputField() {
         var inputFieldObj = new GameObject("InputField");
         TMP_InputField inputField = inputFieldObj.AddComponent<TMP_InputField>();
         inputField.enabled = false;
 
-        var inputFieldGraphic = inputField.gameObject.AddComponent<Image>();
-        inputField.targetGraphic = inputFieldGraphic;
-        inputFieldGraphic.color = new Color(1,1,1,0.3f);
+        var inputFieldImg = inputField.gameObject.AddComponent<ProceduralImage>();
+        inputField.targetGraphic = inputFieldImg;
+        inputFieldImg.color = offWhite;
+        inputFieldImg.SetModifierType<UniformModifier>().Radius = 5;
 
         var textAreaObj = new GameObject("Text Area");
         var textAreaTransform = textAreaObj.AddComponent<RectTransform>();
@@ -166,7 +193,7 @@ public class TextChatDisplay : MonoBehaviour {
         
         var text = textObj.AddComponent<TextMeshProUGUI>();
         text.text = "New Text";
-        text.fontSize = 18;
+        text.fontSize = 16;
         text.horizontalAlignment = HorizontalAlignmentOptions.Left;
         text.verticalAlignment = VerticalAlignmentOptions.Middle;
 

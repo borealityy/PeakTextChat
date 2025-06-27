@@ -22,7 +22,6 @@ public class TextChatManager : MonoBehaviour {
     }
 
     public void SendChatMessage(string message) {
-        Plugin.Logger.LogInfo("fnaf");
         if (!string.IsNullOrWhiteSpace(message) && character != null) {
             character.photonView.RPC("ReceiveChatMessage",RpcTarget.All,PhotonNetwork.NickName,message);
         }
