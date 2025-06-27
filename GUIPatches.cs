@@ -33,6 +33,7 @@ public static class StaminaBarPatch {
 [HarmonyPatch(typeof(GUIManager),"Start")]
 public static class GUIManagerPatch {
     public static GameObject textChatCanvasObj;
+    public static TMP_FontAsset darumaDropOneFont;
     
     [HarmonyPostfix]
     public static void Postfix(GUIManager __instance) {
@@ -41,8 +42,20 @@ public static class GUIManagerPatch {
         textChatCanvasObj.transform.SetParent(transform,false);
         var textChatCanvas = textChatCanvasObj.AddComponent<Canvas>();
         textChatCanvas.renderMode = RenderMode.ScreenSpaceCamera;
+        
+        var textChatCanvasScaler = textChatCanvas.gameObject.GetComponent<CanvasScaler>() ?? textChatCanvas.gameObject.AddComponent<CanvasScaler>();
+        textChatCanvasScaler.referencePixelsPerUnit = 100;
+        textChatCanvasScaler.matchWidthOrHeight = 1;
+        textChatCanvasScaler.referenceResolution = new Vector2(1920,1080);
+        textChatCanvasScaler.scaleFactor = 1;
+        textChatCanvasScaler.screenMatchMode = CanvasScaler.ScreenMatchMode.MatchWidthOrHeight;
+        textChatCanvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+
         var textChatObj = new GameObject("TextChat");
         textChatObj.transform.SetParent(textChatCanvas.transform,false);
         textChatObj.AddComponent<TextChatDisplay>();
+        var fogNotif = __instance.hudCanvas?.transform.Find("Notification/Fog")?.gameObject.GetComponent<TMP_Text>();
+        if (fogNotif != null)
+            darumaDropOneFont = fogNotif.font;
     }
 }

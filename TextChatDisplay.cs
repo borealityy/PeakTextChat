@@ -10,6 +10,8 @@ namespace PeakTextChat;
 
 public class TextChatDisplay : MonoBehaviour {
     int maxMessages = 30;
+    Vector2 boxSize = new Vector2(500,325);
+
     TMP_InputField inputField;
     RectTransform chatLogViewportTransform;
     RectTransform baseTransform;
@@ -66,21 +68,7 @@ public class TextChatDisplay : MonoBehaviour {
         baseTransform.anchorMax = Vector2.zero;
         baseTransform.anchorMin = Vector2.zero;
         baseTransform.pivot = Vector2.zero;
-        baseTransform.sizeDelta = new Vector2(350,250);
-
-        inputField = CreateInputField();
-        var inputFieldTransform = (RectTransform)inputField.transform;
-        inputFieldTransform.pivot = new Vector2(0.5f,0);
-        inputFieldTransform.anchorMin = new Vector2(0,0);
-        inputFieldTransform.anchorMax = new Vector2(1,0);
-        inputFieldTransform.offsetMin = new Vector2(5,5);
-        inputFieldTransform.offsetMax = new Vector2(-5,30);
-        inputFieldTransform.SetParent(baseTransform,false);
-
-        // var bgImage = this.gameObject.AddComponent<ProceduralImage>();
-        // bgImage.color = new Color(0,0,0,0.6f);
-        // bgImage.BorderWidth = 3;
-        // bgImage.SetModifierType<UniformModifier>().Radius = 5;
+        baseTransform.sizeDelta = boxSize;
 
         var shadow = new GameObject("Shadow");
         shadow.transform.SetParent(baseTransform,false);
@@ -92,14 +80,19 @@ public class TextChatDisplay : MonoBehaviour {
         var shadowImg = shadow.AddComponent<ProceduralImage>();
         shadowImg.color = new Color(0,0,0,0.3f);
         shadowImg.FalloffDistance = 10;
-        shadowImg.SetModifierType<UniformModifier>().Radius = 10;
+        shadowImg.SetModifierType<UniformModifier>().Radius = 15;
+
+        // var bgImage = this.gameObject.AddComponent<ProceduralImage>();
+        // bgImage.color = new Color(0,0,0,0.6f);
+        // bgImage.BorderWidth = 3;
+        // bgImage.SetModifierType<UniformModifier>().Radius = 5;
 
         var chatLogHolderObj = new GameObject("ChatLog");
         var chatLogHolderTransform = chatLogHolderObj.AddComponent<RectTransform>();
         chatLogHolderTransform.SetParent(baseTransform,false);
         chatLogHolderTransform.anchorMin = Vector2.zero;
         chatLogHolderTransform.anchorMax = Vector2.one;
-        chatLogHolderTransform.offsetMin = new Vector2(0,35);
+        chatLogHolderTransform.offsetMin = new Vector2(0,40);
         chatLogHolderTransform.offsetMax = Vector2.zero;
         chatLogHolderObj.AddComponent<RectMask2D>();
 
@@ -112,6 +105,15 @@ public class TextChatDisplay : MonoBehaviour {
         chatLogViewportTransform.offsetMin = Vector2.zero;
         chatLogViewportTransform.offsetMax = new Vector2(0,5000);
 
+        inputField = CreateInputField();
+        var inputFieldTransform = (RectTransform)inputField.transform;
+        inputFieldTransform.pivot = new Vector2(0.5f,0);
+        inputFieldTransform.anchorMin = new Vector2(0,0);
+        inputFieldTransform.anchorMax = new Vector2(1,0);
+        inputFieldTransform.offsetMin = new Vector2(5,5);
+        inputFieldTransform.offsetMax = new Vector2(-5,35);
+        inputFieldTransform.SetParent(baseTransform,false);
+
         var chatLogLayout = chatLogViewportObj.AddComponent<VerticalLayoutGroup>();
         chatLogLayout.childControlWidth = true;
         chatLogLayout.childControlHeight = false;
@@ -120,8 +122,8 @@ public class TextChatDisplay : MonoBehaviour {
         chatLogLayout.childScaleWidth = false;
         chatLogLayout.childScaleHeight = false;
         chatLogLayout.childAlignment = TextAnchor.LowerCenter;
-        chatLogLayout.padding = new RectOffset(7,7,5,5);
-        chatLogLayout.spacing = 2;
+        chatLogLayout.padding = new RectOffset(7,7,2,2);
+        chatLogLayout.spacing = 0;
 
         inputField.onSubmit.AddListener((e) => {
             inputField.text = "";
@@ -153,6 +155,7 @@ public class TextChatDisplay : MonoBehaviour {
 
         var inputFieldImg = inputField.gameObject.AddComponent<ProceduralImage>();
         inputField.targetGraphic = inputFieldImg;
+        // inputField.transition = Selectable.Transition.None;
         inputFieldImg.color = offWhite;
         inputFieldImg.SetModifierType<UniformModifier>().Radius = 5;
 
@@ -187,13 +190,15 @@ public class TextChatDisplay : MonoBehaviour {
         var textTransform = textObj.AddComponent<RectTransform>();
         textTransform.anchorMax = Vector2.one;
         textTransform.anchorMin = Vector2.zero;
-        textTransform.offsetMax = new Vector2(-10,-7);
-        textTransform.offsetMin = new Vector2(10,6);
+        textTransform.offsetMax = new Vector2(-5,0);
+        textTransform.offsetMin = new Vector2(5,4);
         textTransform.SetParent(parent,false);
         
         var text = textObj.AddComponent<TextMeshProUGUI>();
         text.text = "New Text";
-        text.fontSize = 16;
+        if (GUIManagerPatch.darumaDropOneFont != null)
+            text.font = GUIManagerPatch.darumaDropOneFont;
+        text.fontSize = 20;
         text.horizontalAlignment = HorizontalAlignmentOptions.Left;
         text.verticalAlignment = VerticalAlignmentOptions.Middle;
 
@@ -204,7 +209,11 @@ public class TextChatDisplay : MonoBehaviour {
         if (chatLogViewportTransform != null) {
             var tmpText = CreateText(chatLogViewportTransform);
             tmpText.text = message;
-            ((RectTransform)tmpText.transform).sizeDelta = new Vector2(0,tmpText.preferredHeight);
+            tmpText.color = offWhite;
+            tmpText.lineSpacing = -40;
+            var prefValues = tmpText.GetPreferredValues(message,boxSize.x - 14,1000);
+
+            ((RectTransform)tmpText.transform).sizeDelta = new Vector2(0,prefValues.y);
             var chatMessage = new ChatMessage(message,tmpText.gameObject);
             messages.Add(chatMessage);
             if (messages.Count > maxMessages) {

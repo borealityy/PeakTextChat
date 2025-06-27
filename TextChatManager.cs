@@ -17,7 +17,12 @@ public class TextChatManager : MonoBehaviour {
     [PunRPC]
     public void ReceiveChatMessage(string senderName,string message) {
         if (TextChatDisplay.instance != null) {
-            TextChatDisplay.instance.AddMessage($"[{senderName}]: {message}");
+            var senderChar = Character.AllCharacters.Find((c) => c.characterName == senderName);
+            var htmlColor = "#fff";
+            if (senderChar != null) {
+                htmlColor = "#" + ColorUtility.ToHtmlStringRGB(senderChar.refs.customization.PlayerColor);
+            }
+            TextChatDisplay.instance.AddMessage($"<color={htmlColor}>[{senderName}]</color>: {message}");
         }
     }
 
