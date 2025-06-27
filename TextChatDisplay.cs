@@ -16,6 +16,8 @@ public class TextChatDisplay : MonoBehaviour {
     float hideTime = 5;
     float fadeOutDelay = 15;
     float hideDelay = 40;
+    float messageHideDelay = 40;
+    float fontSize = 25;
 
     TMP_InputField inputField;
     RectTransform chatLogViewportTransform;
@@ -27,6 +29,8 @@ public class TextChatDisplay : MonoBehaviour {
 
     float hide = 0;
     float hideTimer = -1;
+
+    KeysHelper.KeyCodeInfo keyInfo;
 
     Color offWhite = new Color(0.87f, 0.85f, 0.76f);
 
@@ -41,6 +45,11 @@ public class TextChatDisplay : MonoBehaviour {
     }
 
     void Start() {
+        keyInfo = KeysHelper.GetKeyCodeShortInfo(PeakTextChatPlugin.configKey.Value);
+        fontSize = PeakTextChatPlugin.configFontSize.Value < 0 ? 1000000000 : PeakTextChatPlugin.configFontSize.Value;
+        hideDelay = PeakTextChatPlugin.configHideDelay.Value < 0 ? Mathf.Infinity : PeakTextChatPlugin.configHideDelay.Value;
+        fadeOutDelay = Mathf.Min(PeakTextChatPlugin.configFadeDelay.Value < 0 ? Mathf.Infinity : PeakTextChatPlugin.configFadeDelay.Value,hideDelay);
+        messageHideDelay = PeakTextChatPlugin.configMessageFadeDelay.Value < 0 ? Mathf.Infinity : PeakTextChatPlugin.configMessageFadeDelay.Value;
         ResetTimers();
         SetupChatGUI();
     }
@@ -55,7 +64,7 @@ public class TextChatDisplay : MonoBehaviour {
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.Slash) && inputField != null && EventSystem.current != null && !GUIManager.instance.windowBlockingInput) {
+        if (Input.GetKeyDown(keyInfo.key) && inputField != null && EventSystem.current != null && !GUIManager.instance.windowBlockingInput) {
             EventSystem.current.SetSelectedGameObject(inputField.gameObject,null);
             inputField.ActivateInputField();
             isBlockingInput = true;
@@ -119,7 +128,7 @@ public class TextChatDisplay : MonoBehaviour {
         chatLogHolderTransform.SetParent(baseTransform,false);
         chatLogHolderTransform.anchorMin = Vector2.zero;
         chatLogHolderTransform.anchorMax = Vector2.one;
-        chatLogHolderTransform.offsetMin = new Vector2(0,40);
+        chatLogHolderTransform.offsetMin = new Vector2(0,fontSize + 20);
         chatLogHolderTransform.offsetMax = Vector2.zero;
         chatLogHolderObj.AddComponent<RectMask2D>();
 
@@ -138,7 +147,7 @@ public class TextChatDisplay : MonoBehaviour {
         inputFieldTransform.anchorMin = new Vector2(0,0);
         inputFieldTransform.anchorMax = new Vector2(1,0);
         inputFieldTransform.offsetMin = new Vector2(5,5);
-        inputFieldTransform.offsetMax = new Vector2(-5,35);
+        inputFieldTransform.offsetMax = new Vector2(-5,fontSize + 15);
         inputFieldTransform.SetParent(baseTransform,false);
 
         var chatLogLayout = chatLogViewportObj.AddComponent<VerticalLayoutGroup>();
@@ -149,8 +158,8 @@ public class TextChatDisplay : MonoBehaviour {
         chatLogLayout.childScaleWidth = false;
         chatLogLayout.childScaleHeight = false;
         chatLogLayout.childAlignment = TextAnchor.LowerCenter;
-        chatLogLayout.padding = new RectOffset(7,7,2,2);
-        chatLogLayout.spacing = 0;
+        chatLogLayout.padding = new RectOffset(12,12,1,1);
+        chatLogLayout.spacing = -fontSize / 10;
 
         inputField.onSubmit.AddListener((e) => {
             inputField.text = "";
@@ -198,7 +207,7 @@ public class TextChatDisplay : MonoBehaviour {
         
         var placeholderText = CreateText(textAreaTransform);
         placeholderText.color = new(0,0,0,0.6f);
-        placeholderText.text = "Press / to chat";
+        placeholderText.text = $"Press {keyInfo.keyText} to chat";
         placeholderText.name = "Placeholder";
 
         var mainText = CreateText(textAreaTransform);
@@ -213,20 +222,20 @@ public class TextChatDisplay : MonoBehaviour {
         return inputField;
     }
 
-    static TMP_Text CreateText(Transform parent) {
+    TMP_Text CreateText(Transform parent) {
         var textObj = new GameObject("Text");
         var textTransform = textObj.AddComponent<RectTransform>();
         textTransform.anchorMax = Vector2.one;
         textTransform.anchorMin = Vector2.zero;
-        textTransform.offsetMax = new Vector2(-5,0);
-        textTransform.offsetMin = new Vector2(5,4);
+        textTransform.offsetMax = new Vector2(-2,0);
+        textTransform.offsetMin = new Vector2(2,4);
         textTransform.SetParent(parent,false);
         
         var text = textObj.AddComponent<TextMeshProUGUI>();
         text.text = "New Text";
         if (GUIManagerPatch.darumaDropOneFont != null)
             text.font = GUIManagerPatch.darumaDropOneFont;
-        text.fontSize = 20;
+        text.fontSize = fontSize;
         text.horizontalAlignment = HorizontalAlignmentOptions.Left;
         text.verticalAlignment = VerticalAlignmentOptions.Middle;
 
@@ -242,7 +251,7 @@ public class TextChatDisplay : MonoBehaviour {
             var prefValues = tmpText.GetPreferredValues(message,boxSize.x - 14,1000);
 
             ((RectTransform)tmpText.transform).sizeDelta = new Vector2(0,prefValues.y);
-            var chatMessage = new ChatMessage(message,tmpText.gameObject);
+            var chatMessage = new ChatMessage(message,tmpText.gameObject,messageHideDelay);
             messages.Add(chatMessage);
             if (messages.Count > maxMessages) {
                 var firstMessage = messages[0];
@@ -283,11 +292,12 @@ public class TextChatDisplay : MonoBehaviour {
             }
         }
         
-        public ChatMessage(string message,GameObject textObject) {
+        public ChatMessage(string message,GameObject textObject,float hideDelay) {
             this.message = message;
             this.textObj = textObject;
             this.text = textObject.GetComponent<TMP_Text>();
             this.textColor = this.text.color;
+            this.hideDelay = hideDelay;
             hideTimer = hideDelay;
         }
     }
