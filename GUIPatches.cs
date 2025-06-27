@@ -32,11 +32,12 @@ public static class StaminaBarPatch {
 
 [HarmonyPatch(typeof(GUIManager),"Start")]
 public static class GUIManagerPatch {
+    public static GameObject textChatCanvasObj;
+    
     [HarmonyPostfix]
     public static void Postfix(GUIManager __instance) {
-        Plugin.Logger.LogInfo("pa");
         var transform = __instance.transform;
-        var textChatCanvasObj = new GameObject("TextChatCanvas");
+        textChatCanvasObj = new GameObject("TextChatCanvas");
         textChatCanvasObj.transform.SetParent(transform,false);
         var textChatCanvas = textChatCanvasObj.AddComponent<Canvas>();
         textChatCanvas.renderMode = RenderMode.ScreenSpaceCamera;

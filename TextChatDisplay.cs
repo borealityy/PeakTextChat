@@ -140,7 +140,7 @@ public class TextChatDisplay : MonoBehaviour {
         borderTransform.anchorMax = Vector2.one;
         borderTransform.offsetMin = Vector2.zero;
         borderTransform.offsetMax = Vector2.zero;
-        var borderImg = shadow.AddComponent<ProceduralImage>();
+        var borderImg = border.AddComponent<ProceduralImage>();
         borderImg.color = offWhite;
         borderImg.BorderWidth = 2;
         borderImg.SetModifierType<UniformModifier>().Radius = 10;
