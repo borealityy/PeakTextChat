@@ -18,6 +18,7 @@ public class Plugin : BaseUnityPlugin
 
         Harmony harmony = new Harmony("com.borealityy.peaktextchat");
         harmony.PatchAll(typeof(CharacterPatch));
+        harmony.PatchAll(typeof(StaminaBarPatch));
         harmony.PatchAll(typeof(GUIManagerPatch));
         harmony.PatchAll(typeof(TextChatBlockInput));
     }

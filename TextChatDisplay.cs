@@ -10,9 +10,9 @@ namespace PeakTextChat;
 
 public class TextChatDisplay : MonoBehaviour {
     int maxMessages = 30;
-    Canvas textChatCanvas;
     TMP_InputField inputField;
     RectTransform chatLogViewportTransform;
+    RectTransform baseTransform;
 
     Color offWhite = new Color(0.87f, 0.85f, 0.76f);
 
@@ -30,26 +30,42 @@ public class TextChatDisplay : MonoBehaviour {
         SetupChatGUI();
     }
 
+    GameObject currentSelection;
+
     void Update() {
+        if (currentSelection != EventSystem.current.currentSelectedGameObject) {
+            currentSelection = EventSystem.current.currentSelectedGameObject;
+            if (currentSelection != inputField.gameObject) {
+                isBlockingInput = false;
+            }
+        }
+
         if (Input.GetKeyDown(KeyCode.Slash) && inputField != null && EventSystem.current != null && !GUIManager.instance.windowBlockingInput) {
-            EventSystem.current.SetSelectedGameObject(inputField.gameObject, null);
-            inputField.OnPointerClick(new PointerEventData(EventSystem.current));
+            // EventSystem.current.SetSelectedGameObject(null);
+            EventSystem.current.SetSelectedGameObject(inputField.gameObject,null);
+            inputField.ActivateInputField();
+            // inputField.Select();
+            // inputField.OnSelect(null);
+            Debug.Log(inputField);
+            Debug.Log(EventSystem.current.currentSelectedGameObject);
+            Debug.Log("A");
             isBlockingInput = true;
+        }
+
+        if (baseTransform != null && StaminaBarPatch.textChatDummyTransform != null) { 
+            baseTransform.position = StaminaBarPatch.textChatDummyTransform.position;
+            baseTransform.anchoredPosition += new Vector2(0,40);
         }
     }
 
     void SetupChatGUI() {
         var guiManager = GUIManager.instance;
         
-        textChatCanvas = this.gameObject.AddComponent<Canvas>();
-        textChatCanvas.renderMode = RenderMode.ScreenSpaceCamera;
-        var baseObj = new GameObject("Image");
-        var baseTransform = baseObj.AddComponent<RectTransform>();
+        baseTransform = this.gameObject.GetComponent<RectTransform>() ?? this.gameObject.AddComponent<RectTransform>();
         baseTransform.SetParent(this.transform,false);
         baseTransform.anchorMax = Vector2.zero;
         baseTransform.anchorMin = Vector2.zero;
         baseTransform.pivot = Vector2.zero;
-        baseTransform.anchoredPosition = new Vector2(30,120);
         baseTransform.sizeDelta = new Vector2(350,250);
 
         inputField = CreateInputField();
@@ -61,7 +77,7 @@ public class TextChatDisplay : MonoBehaviour {
         inputFieldTransform.offsetMax = new Vector2(0,30);
         inputFieldTransform.SetParent(baseTransform,false);
 
-        var bgImage = baseObj.AddComponent<ProceduralImage>();
+        var bgImage = this.gameObject.AddComponent<ProceduralImage>();
         bgImage.color = new Color(0,0,0,0.6f);
         // bgImage.BorderWidth = 3;
         bgImage.SetModifierType<UniformModifier>().Radius = 5;
