@@ -10,11 +10,23 @@ namespace PeakTextChat;
 
 public class TextChatDisplay : MonoBehaviour {
     int maxMessages = 30;
-    Vector2 boxSize = new Vector2(500,325);
+    Vector2 boxSize = new Vector2(500,300);
+    float fadeInTime = 0.03f;
+    float fadeOutTime = 5;
+    float hideTime = 5;
+    float fadeOutDelay = 15;
+    float hideDelay = 40;
 
     TMP_InputField inputField;
     RectTransform chatLogViewportTransform;
     RectTransform baseTransform;
+    CanvasGroup canvasGroup;
+
+    float fade = 1;
+    float fadeTimer = -1;
+
+    float hide = 0;
+    float hideTimer = -1;
 
     Color offWhite = new Color(0.87f, 0.85f, 0.76f);
 
@@ -29,6 +41,7 @@ public class TextChatDisplay : MonoBehaviour {
     }
 
     void Start() {
+        ResetTimers();
         SetupChatGUI();
     }
 
@@ -43,21 +56,29 @@ public class TextChatDisplay : MonoBehaviour {
         }
 
         if (Input.GetKeyDown(KeyCode.Slash) && inputField != null && EventSystem.current != null && !GUIManager.instance.windowBlockingInput) {
-            // EventSystem.current.SetSelectedGameObject(null);
             EventSystem.current.SetSelectedGameObject(inputField.gameObject,null);
             inputField.ActivateInputField();
-            // inputField.Select();
-            // inputField.OnSelect(null);
-            Debug.Log(inputField);
-            Debug.Log(EventSystem.current.currentSelectedGameObject);
-            Debug.Log("A");
             isBlockingInput = true;
         }
+
+        if (isBlockingInput)
+            ResetTimers();
 
         if (baseTransform != null && StaminaBarPatch.textChatDummyTransform != null) { 
             baseTransform.position = StaminaBarPatch.textChatDummyTransform.position;
             baseTransform.anchoredPosition += new Vector2(0,40);
         }
+
+        fade = Mathf.Clamp(fadeTimer <= 0 ? fade - (Time.deltaTime / fadeOutTime) : fade + (Time.deltaTime / fadeInTime),0,1);
+        hide = Mathf.Clamp(hideTimer <= 0 ? hide + (Time.deltaTime / hideTime) : hide - (Time.deltaTime / fadeInTime),0,1);
+        fadeTimer -= Time.deltaTime;
+        hideTimer -= Time.deltaTime;
+        if (canvasGroup != null) {
+            canvasGroup.alpha = fade * 0.5f + (1 - hide) * 0.5f;
+        }
+
+        foreach (var chatMessage in messages)
+            chatMessage.Update();
     }
 
     void SetupChatGUI() {
@@ -69,6 +90,12 @@ public class TextChatDisplay : MonoBehaviour {
         baseTransform.anchorMin = Vector2.zero;
         baseTransform.pivot = Vector2.zero;
         baseTransform.sizeDelta = boxSize;
+
+        canvasGroup = this.gameObject.AddComponent<CanvasGroup>();
+        canvasGroup.alpha = 1;
+        canvasGroup.blocksRaycasts = true;
+        canvasGroup.interactable = true;
+        canvasGroup.ignoreParentGroups = false;
 
         var shadow = new GameObject("Shadow");
         shadow.transform.SetParent(baseTransform,false);
@@ -176,6 +203,7 @@ public class TextChatDisplay : MonoBehaviour {
 
         var mainText = CreateText(textAreaTransform);
         mainText.color = new(0,0,0,1);
+        mainText.richText = false;
 
         inputField.textViewport = textAreaTransform;
         inputField.textComponent = mainText;
@@ -223,15 +251,44 @@ public class TextChatDisplay : MonoBehaviour {
                 }
                 messages.RemoveAt(0);
             }
+            ResetTimers();
         }
+    }
+
+    void ResetTimers() {
+        fadeTimer = fadeOutDelay;
+        hideTimer = hideDelay;
     }
 
     public class ChatMessage {
         public string message;
         public GameObject textObj;
+        public TMP_Text text;
+        Color textColor;
+
+        float hideDelay = 40;
+        float hideTime = 10;
+
+        float hideTimer = -1;
+        float hide = 0;
+
+        public void Update() {
+            hideTimer -= Time.deltaTime;
+
+            if (hideTimer <= 0) {
+                if (hide < 1) {
+                    hide += Time.deltaTime / hideTime;
+                    text.color = new Color(textColor.r,textColor.g,textColor.b,1 - hide);
+                }
+            }
+        }
+        
         public ChatMessage(string message,GameObject textObject) {
             this.message = message;
             this.textObj = textObject;
+            this.text = textObject.GetComponent<TMP_Text>();
+            this.textColor = this.text.color;
+            hideTimer = hideDelay;
         }
     }
 }

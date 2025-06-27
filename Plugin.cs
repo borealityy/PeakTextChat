@@ -17,7 +17,7 @@ public class Plugin : BaseUnityPlugin
     {
         // Plugin startup logic
         Logger = base.Logger;
-        Logger.LogInfo($"Plugin {MyPluginInfo.PLUGIN_GUID} is loaded!");
+        Logger.LogInfo($"PeakTextChat is loaded!");
 
         harmony = new Harmony("com.borealityy.peaktextchat");
         harmony.PatchAll(typeof(CharacterPatch));
