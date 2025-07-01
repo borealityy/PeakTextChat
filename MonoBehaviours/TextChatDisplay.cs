@@ -73,8 +73,8 @@ public class TextChatDisplay : MonoBehaviour {
         if (isBlockingInput)
             ResetTimers();
 
-        if (baseTransform != null && StaminaBarPatch.textChatDummyTransform != null) { 
-            baseTransform.position = StaminaBarPatch.textChatDummyTransform.position;
+        if (baseTransform != null && StaminaBarPatch.barGroupChildWatcher.textChatDummyTransform != null) { 
+            baseTransform.position = StaminaBarPatch.barGroupChildWatcher.textChatDummyTransform.position;
             baseTransform.anchoredPosition += new Vector2(0,40);
         }
 

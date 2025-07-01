@@ -12,7 +12,7 @@ namespace PeakTextChat;
 
 [HarmonyPatch(typeof(StaminaBar),"Start")]
 public static class StaminaBarPatch {
-    public static RectTransform textChatDummyTransform;
+    public static BarGroupChildWatcher barGroupChildWatcher;
 
     [HarmonyPostfix]
     public static void Postfix(StaminaBar __instance) {
@@ -24,8 +24,14 @@ public static class StaminaBarPatch {
             var transform = textChatDummyObj.AddComponent<RectTransform>();
             transform.SetAsFirstSibling();
             transform.sizeDelta = Vector2.zero;
-            textChatDummyTransform = (RectTransform)textChatDummyObj.transform;
+            barGroupChildWatcher = parent.gameObject.AddComponent<BarGroupChildWatcher>();
+            barGroupChildWatcher.textChatDummyTransform = textChatDummyObj.transform;
         }
+    }
+
+    public static void CleanupObjects() {
+        GameObject.Destroy(barGroupChildWatcher.textChatDummyTransform);
+        GameObject.Destroy(barGroupChildWatcher);
     }
 }
 

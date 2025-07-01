@@ -72,12 +72,11 @@ public class PeakTextChatPlugin : BaseUnityPlugin
     private void OnDestroy() {
         if (TextChatDisplay.instance != null)
             GameObject.Destroy(TextChatDisplay.instance.gameObject);
-        if (TextChatManager.instance != null)
-            GameObject.Destroy(TextChatManager.instance);
         if (GUIManagerPatch.textChatCanvasObj != null)
             GameObject.Destroy(GUIManagerPatch.textChatCanvasObj);
-        if (StaminaBarPatch.textChatDummyTransform != null)
-            GameObject.Destroy(StaminaBarPatch.textChatDummyTransform.gameObject);
+            
+        TextChatManager.CleanupObjects();
+        StaminaBarPatch.CleanupObjects();
 
         harmony.UnpatchSelf();
     }

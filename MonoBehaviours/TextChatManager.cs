@@ -31,4 +31,10 @@ public class TextChatManager : MonoBehaviour {
             character.photonView.RPC("ReceiveChatMessage",RpcTarget.All,PhotonNetwork.NickName,message);
         }
     }
+
+    public static void CleanupObjects() {
+        if (instance != null) {
+            GameObject.Destroy(instance);
+        }
+    }
 }
