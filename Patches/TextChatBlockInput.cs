@@ -3,13 +3,23 @@ using HarmonyLib;
 
 namespace PeakTextChat;
 
-[HarmonyPatch(typeof(GUIManager),nameof(GUIManager.UpdateWindowStatus))]
 public static class TextChatBlockInput {
     private static readonly MethodInfo windowBlockingInput = AccessTools.PropertySetter(typeof(GUIManager),"windowBlockingInput");
+
+    [HarmonyPatch(typeof(GUIManager),nameof(GUIManager.UpdateWindowStatus))]
     [HarmonyPostfix]
-    public static void Postfix() {
+    public static void UpdateWindowStatusPatch() {
         if (TextChatDisplay.instance?.isBlockingInput == true) {
             windowBlockingInput?.Invoke(GUIManager.instance,[ true ]);
         }
+    }
+
+    [HarmonyPatch(typeof(CinemaCamera),"Update")]
+    [HarmonyPrefix]
+    public static bool UpdateCinemaCamPatch(CinemaCamera __instance) {
+        if (GUIManager.instance?.windowBlockingInput == true && !__instance.on) {
+            return false;
+        }
+        return true;
     }
 }
