@@ -4,6 +4,7 @@ using BepInEx.Configuration;
 using BepInEx.Logging;
 using HarmonyLib;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 namespace PeakTextChat;
 
@@ -19,6 +20,7 @@ public class PeakTextChatPlugin : BaseUnityPlugin
     public static ConfigEntry<float> configFadeDelay;
     public static ConfigEntry<float> configHideDelay;
     public static ConfigEntry<KeyCodeShort> configKey;
+    public static ConfigEntry<TextChatPosition> configPos;
 
     private void Awake()
     {
@@ -31,6 +33,13 @@ public class PeakTextChatPlugin : BaseUnityPlugin
                                 "ChatKey",
                                 KeyCodeShort.Slash,
                                 "The key that activates typing in chat"
+                            );
+
+        configPos = Config.Bind<TextChatPosition>(
+                                "Display",
+                                "ChatPosition",
+                                TextChatPosition.BottomLeft,
+                                "The position of the text chat"
                             );
 
         configFontSize = Config.Bind<float>(
@@ -79,5 +88,11 @@ public class PeakTextChatPlugin : BaseUnityPlugin
         StaminaBarPatch.CleanupObjects();
 
         harmony.UnpatchSelf();
+    }
+
+    public enum TextChatPosition {
+        BottomLeft,
+        TopLeft,
+        TopRight
     }
 }

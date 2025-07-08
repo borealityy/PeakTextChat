@@ -78,10 +78,8 @@ public class TextChatDisplay : MonoBehaviour {
         if (isBlockingInput)
             ResetTimers();
 
-        if (baseTransform != null && StaminaBarPatch.barGroupChildWatcher.textChatDummyTransform != null) { 
-            baseTransform.position = StaminaBarPatch.barGroupChildWatcher.textChatDummyTransform.position;
-            baseTransform.anchoredPosition += new Vector2(0,40);
-        }
+        if (PeakTextChatPlugin.configPos.Value == PeakTextChatPlugin.TextChatPosition.BottomLeft)
+            UpdatePosition(true);
 
         fade = Mathf.Clamp(fadeTimer <= 0 ? fade - (Time.deltaTime / fadeOutTime) : fade + (Time.deltaTime / fadeInTime),0,1);
         hide = Mathf.Clamp(hideTimer <= 0 ? hide + (Time.deltaTime / hideTime) : hide - (Time.deltaTime / fadeInTime),0,1);
@@ -100,9 +98,7 @@ public class TextChatDisplay : MonoBehaviour {
         
         baseTransform = this.gameObject.GetComponent<RectTransform>() ?? this.gameObject.AddComponent<RectTransform>();
         baseTransform.SetParent(this.transform,false);
-        baseTransform.anchorMax = Vector2.zero;
-        baseTransform.anchorMin = Vector2.zero;
-        baseTransform.pivot = Vector2.zero;
+        UpdatePosition();
         baseTransform.sizeDelta = boxSize;
 
         canvasGroup = this.gameObject.AddComponent<CanvasGroup>();
@@ -272,6 +268,28 @@ public class TextChatDisplay : MonoBehaviour {
     void ResetTimers() {
         fadeTimer = fadeOutDelay;
         hideTimer = hideDelay;
+    }
+
+    void UpdatePosition(bool isBottomLeft = false) {
+        if (isBottomLeft || PeakTextChatPlugin.configPos.Value == PeakTextChatPlugin.TextChatPosition.BottomLeft) {
+            if (baseTransform != null && StaminaBarPatch.barGroupChildWatcher.textChatDummyTransform != null) {
+                baseTransform.pivot = Vector2.zero;
+                baseTransform.anchorMax = Vector2.zero;
+                baseTransform.anchorMin = Vector2.zero;
+                baseTransform.position = StaminaBarPatch.barGroupChildWatcher.textChatDummyTransform.position;
+                baseTransform.anchoredPosition += new Vector2(0,40);
+            }
+        } else if (PeakTextChatPlugin.configPos.Value == PeakTextChatPlugin.TextChatPosition.TopLeft) {
+            baseTransform.pivot = new Vector2(0,1);
+            baseTransform.anchorMax = new Vector2(0,1);
+            baseTransform.anchorMin = new Vector2(0,1);
+            baseTransform.anchoredPosition = new Vector2(64,-62);
+        } else if (PeakTextChatPlugin.configPos.Value == PeakTextChatPlugin.TextChatPosition.TopRight) {
+            baseTransform.pivot = Vector2.one;
+            baseTransform.anchorMax = Vector2.one;
+            baseTransform.anchorMin = Vector2.one;
+            baseTransform.anchoredPosition = new Vector2(-64,-62);
+        }
     }
 
     public class ChatMessage {
