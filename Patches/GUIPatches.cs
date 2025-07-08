@@ -36,17 +36,19 @@ public static class StaminaBarPatch {
 }
 
 
-[HarmonyPatch(typeof(GUIManager),"Start")]
 public static class GUIManagerPatch {
-    public static GameObject textChatCanvasObj;
+    public static Canvas textChatCanvas;
     public static TMP_FontAsset darumaDropOneFont;
     
+    static bool isHUDActive = true;
+
+    [HarmonyPatch(typeof(GUIManager),"Start")]
     [HarmonyPostfix]
-    public static void Postfix(GUIManager __instance) {
+    public static void StartPostfix(GUIManager __instance) {
         var transform = __instance.transform;
-        textChatCanvasObj = new GameObject("TextChatCanvas");
+        var textChatCanvasObj = new GameObject("TextChatCanvas");
         textChatCanvasObj.transform.SetParent(transform,false);
-        var textChatCanvas = textChatCanvasObj.AddComponent<Canvas>();
+        textChatCanvas = textChatCanvasObj.AddComponent<Canvas>();
         textChatCanvas.renderMode = RenderMode.ScreenSpaceCamera;
         
         var textChatCanvasScaler = textChatCanvas.gameObject.GetComponent<CanvasScaler>() ?? textChatCanvas.gameObject.AddComponent<CanvasScaler>();
@@ -63,5 +65,14 @@ public static class GUIManagerPatch {
         var fogNotif = __instance.hudCanvas?.transform.Find("Notification/Fog")?.gameObject.GetComponent<TMP_Text>();
         if (fogNotif != null)
             darumaDropOneFont = fogNotif.font;
+    }
+
+    [HarmonyPatch(typeof(GUIManager),"LateUpdate")]
+    [HarmonyPostfix]
+    public static void LateUpdatePostfix(GUIManager __instance) {
+        if (isHUDActive != __instance.hudCanvas.gameObject.activeInHierarchy) {
+            isHUDActive = __instance.hudCanvas.gameObject.activeInHierarchy;
+            textChatCanvas.gameObject.SetActive(isHUDActive);
+        }
     }
 }

@@ -66,14 +66,14 @@ public class PeakTextChatPlugin : BaseUnityPlugin
         harmony.PatchAll(typeof(CharacterPatch));
         harmony.PatchAll(typeof(StaminaBarPatch));
         harmony.PatchAll(typeof(GUIManagerPatch));
-        harmony.PatchAll(typeof(TextChatBlockInput));
+        harmony.PatchAll(typeof(InputBlockingPatches));
     }
 
     private void OnDestroy() {
         if (TextChatDisplay.instance != null)
             GameObject.Destroy(TextChatDisplay.instance.gameObject);
-        if (GUIManagerPatch.textChatCanvasObj != null)
-            GameObject.Destroy(GUIManagerPatch.textChatCanvasObj);
+        if (GUIManagerPatch.textChatCanvas != null)
+            GameObject.Destroy(GUIManagerPatch.textChatCanvas);
             
         TextChatManager.CleanupObjects();
         StaminaBarPatch.CleanupObjects();

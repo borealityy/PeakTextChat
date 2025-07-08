@@ -3,7 +3,7 @@ using HarmonyLib;
 
 namespace PeakTextChat;
 
-public static class TextChatBlockInput {
+public static class InputBlockingPatches {
     private static readonly MethodInfo windowBlockingInput = AccessTools.PropertySetter(typeof(GUIManager),"windowBlockingInput");
 
     [HarmonyPatch(typeof(GUIManager),nameof(GUIManager.UpdateWindowStatus))]

@@ -57,6 +57,11 @@ public class TextChatDisplay : MonoBehaviour {
     GameObject currentSelection;
 
     void Update() {
+        if (!this.gameObject.activeInHierarchy) {
+            isBlockingInput = false;
+            return;
+        }
+
         if (currentSelection != EventSystem.current.currentSelectedGameObject) {
             currentSelection = EventSystem.current.currentSelectedGameObject;
             if (currentSelection != inputField.gameObject) {
