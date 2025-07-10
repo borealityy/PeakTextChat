@@ -70,7 +70,7 @@ public class PeakTextChatPlugin : BaseUnityPlugin
                                 );
 
         harmony = new Harmony("com.borealityy.peaktextchat");
-        harmony.PatchAll(typeof(CharacterPatch));
+        harmony.PatchAll(typeof(GameUtilsPatch));
         harmony.PatchAll(typeof(StaminaBarPatch));
         harmony.PatchAll(typeof(GUIManagerPatch));
         harmony.PatchAll(typeof(InputBlockingPatches));
