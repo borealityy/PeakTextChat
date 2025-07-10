@@ -31,7 +31,8 @@ public class TextChatDisplay : MonoBehaviour {
 
     KeysHelper.KeyCodeInfo keyInfo;
 
-    Color offWhite = new Color(0.87f, 0.85f, 0.76f);
+    Color offWhite = new Color(0.87f,0.85f,0.76f);
+    Color red = new Color(0.99f,0.33f,0);
 
     List<ChatMessage> messages = new List<ChatMessage>();
 
@@ -252,6 +253,33 @@ public class TextChatDisplay : MonoBehaviour {
 
             ((RectTransform)tmpText.transform).sizeDelta = new Vector2(0,prefValues.y);
             var chatMessage = new ChatMessage(message,tmpText.gameObject,messageHideDelay);
+            messages.Add(chatMessage);
+            if (messages.Count > maxMessages) {
+                var firstMessage = messages[0];
+                if (firstMessage != null && firstMessage.textObj != null) {
+                    GameObject.Destroy(firstMessage.textObj);
+                }
+                messages.RemoveAt(0);
+            }
+            ResetTimers();
+        }
+    }
+
+    public void AddMessage(TextChatManager.Message messageData) {
+        if (chatLogViewportTransform != null) {
+            // string deadLabel = !messageData.isDead ? $"<color=#{ColorUtility.ToHtmlStringRGB(red)}>[DEAD]</color>" : "";
+            Color usernameColor = messageData.character != null ? messageData.character.refs.customization.PlayerColor : new Color(0.64f,0.69f,0.83f);
+            string usernameLabel = $"<color=#{ColorUtility.ToHtmlStringRGB(usernameColor)}>[{messageData.character?.characterName ?? "Unknown"}]</color>";
+            string fullMessage = $"{usernameLabel}: {messageData.message}";
+            
+            var tmpText = CreateText(chatLogViewportTransform);
+            tmpText.text = fullMessage;
+            tmpText.color = offWhite;
+            tmpText.lineSpacing = -40;
+            var prefValues = tmpText.GetPreferredValues(fullMessage,boxSize.x - 14,1000);
+
+            ((RectTransform)tmpText.transform).sizeDelta = new Vector2(0,prefValues.y);
+            var chatMessage = new ChatMessage(fullMessage,tmpText.gameObject,messageHideDelay);
             messages.Add(chatMessage);
             if (messages.Count > maxMessages) {
                 var firstMessage = messages[0];

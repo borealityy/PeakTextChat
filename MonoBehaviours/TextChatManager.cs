@@ -35,19 +35,13 @@ public class TextChatManager : MonoBehaviour {
             string userId = data[2]?.ToString() ?? "";
             bool isDead = bool.TryParse(data[3]?.ToString(), out var d) && d;
 
-            ReceiveChatMessage(userId,message);
+            ReceiveChatMessage(userId,message,isDead);
         }
     }
 
-    public void ReceiveChatMessage(string userId,string message) {
+    public void ReceiveChatMessage(string userId,string message,bool isDead) {
         if (TextChatDisplay.instance != null) {
-            var senderChar = Character.AllCharacters.Find((c) => c.photonView?.Owner?.UserId == userId);
-            var htmlColor = "#aaa";
-            if (senderChar != null) {
-                htmlColor = "#" + ColorUtility.ToHtmlStringRGB(senderChar.refs.customization.PlayerColor);
-            }
-            string senderName = senderChar != null ? senderChar.characterName : "Unknown";
-            TextChatDisplay.instance.AddMessage($"<color={htmlColor}>[{senderName}]</color>: {message}");
+            TextChatDisplay.instance.AddMessage(new Message(userId,message,isDead));
         }
     }
 
@@ -76,7 +70,19 @@ public class TextChatManager : MonoBehaviour {
 
     public static void CleanupObjects() {
         if (instance != null) {
-            GameObject.Destroy(instance);
+            GameObject.Destroy(instance.gameObject);
+        }
+    }
+
+    public class Message {
+        public Character character;
+        public string message;
+        public bool isDead;
+
+        public Message(string userId,string message,bool isDead) {
+           this.character = Character.AllCharacters.Find((c) => c.photonView?.Owner?.UserId == userId);
+           this.message = message;
+           this.isDead = isDead;
         }
     }
 }
