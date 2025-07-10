@@ -249,7 +249,7 @@ public class TextChatDisplay : MonoBehaviour {
             tmpText.text = message;
             tmpText.color = offWhite;
             tmpText.lineSpacing = -40;
-            var prefValues = tmpText.GetPreferredValues(message,boxSize.x - 14,1000);
+            var prefValues = tmpText.GetPreferredValues(message,boxSize.x - 24,1000);
 
             ((RectTransform)tmpText.transform).sizeDelta = new Vector2(0,prefValues.y);
             var chatMessage = new ChatMessage(message,tmpText.gameObject,messageHideDelay);
@@ -270,25 +270,8 @@ public class TextChatDisplay : MonoBehaviour {
             // string deadLabel = !messageData.isDead ? $"<color=#{ColorUtility.ToHtmlStringRGB(red)}>[DEAD]</color>" : "";
             Color usernameColor = messageData.character != null ? messageData.character.refs.customization.PlayerColor : new Color(0.64f,0.69f,0.83f);
             string usernameLabel = $"<color=#{ColorUtility.ToHtmlStringRGB(usernameColor)}>[{messageData.character?.characterName ?? "Unknown"}]</color>";
-            string fullMessage = $"{usernameLabel}: {messageData.message}";
-            
-            var tmpText = CreateText(chatLogViewportTransform);
-            tmpText.text = fullMessage;
-            tmpText.color = offWhite;
-            tmpText.lineSpacing = -40;
-            var prefValues = tmpText.GetPreferredValues(fullMessage,boxSize.x - 14,1000);
 
-            ((RectTransform)tmpText.transform).sizeDelta = new Vector2(0,prefValues.y);
-            var chatMessage = new ChatMessage(fullMessage,tmpText.gameObject,messageHideDelay);
-            messages.Add(chatMessage);
-            if (messages.Count > maxMessages) {
-                var firstMessage = messages[0];
-                if (firstMessage != null && firstMessage.textObj != null) {
-                    GameObject.Destroy(firstMessage.textObj);
-                }
-                messages.RemoveAt(0);
-            }
-            ResetTimers();
+            AddMessage($"{usernameLabel}: {messageData.message}");
         }
     }
 
