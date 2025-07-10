@@ -43,5 +43,8 @@
     <Reference Include="PhotonRealtime">
       <HintPath>$(PeakDir)\PEAK_Data\Managed\PhotonRealtime.dll</HintPath>
     </Reference>
+    <Reference Include="Photon3Unity3D">
+      <HintPath>$(PeakDir)\PEAK_Data\Managed\Photon3Unity3D.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

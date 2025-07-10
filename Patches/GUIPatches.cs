@@ -1,11 +1,6 @@
-using System.Collections.Generic;
-using System.Reflection;
 using HarmonyLib;
-using PeakTextChat;
-using Photon.Pun;
 using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 namespace PeakTextChat;
