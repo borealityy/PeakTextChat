@@ -19,6 +19,7 @@ public class PeakTextChatPlugin : BaseUnityPlugin
     public static ConfigEntry<float> configHideDelay;
     public static ConfigEntry<KeyCodeShort> configKey;
     public static ConfigEntry<TextChatPosition> configPos;
+    public static ConfigEntry<bool> configRichTextEnabled;
 
     private void Awake()
     {
@@ -45,6 +46,13 @@ public class PeakTextChatPlugin : BaseUnityPlugin
                                 "ChatFontSize",
                                 20,
                                 "Size of the chat's text"
+                            );
+
+        configRichTextEnabled = Config.Bind<bool>(
+                                "Display",
+                                "ChatRichText",
+                                true,
+                                "Whether rich text tags get parsed in messages (e.g. <b> for bold text)"
                             );
 
         configFadeDelay = Config.Bind<float>(

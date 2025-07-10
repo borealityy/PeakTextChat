@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -271,7 +272,12 @@ public class TextChatDisplay : MonoBehaviour {
             Color usernameColor = messageData.character != null ? messageData.character.refs.customization.PlayerColor : new Color(0.64f,0.69f,0.83f);
             string usernameLabel = $"<color=#{ColorUtility.ToHtmlStringRGB(usernameColor)}>[{messageData.character?.characterName ?? "Unknown"}]</color>";
 
-            AddMessage($"{usernameLabel}: {messageData.message}");
+            string message = messageData.message;
+            if (!PeakTextChatPlugin.configRichTextEnabled.Value) {
+                message = Regex.Replace(message, "<.*?>", string.Empty);
+            }
+
+            AddMessage($"{usernameLabel}: {message}");
         }
     }
 
