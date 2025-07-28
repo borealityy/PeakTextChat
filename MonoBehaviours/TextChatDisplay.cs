@@ -161,7 +161,7 @@ public class TextChatDisplay : MonoBehaviour {
         chatLogLayout.childScaleHeight = false;
         chatLogLayout.childAlignment = TextAnchor.LowerCenter;
         chatLogLayout.padding = new RectOffset(12,12,1,1);
-        chatLogLayout.spacing = -fontSize / 10;
+        chatLogLayout.spacing = -fontSize / 8;
 
         inputField.onSubmit.AddListener((e) => {
             inputField.text = "";
@@ -250,7 +250,7 @@ public class TextChatDisplay : MonoBehaviour {
             var tmpText = CreateText(chatLogViewportTransform);
             tmpText.text = message;
             tmpText.color = offWhite;
-            tmpText.lineSpacing = -40;
+            tmpText.lineSpacing = -15;
             var prefValues = tmpText.GetPreferredValues(message,boxSize.x - 24,1000);
 
             ((RectTransform)tmpText.transform).sizeDelta = new Vector2(0,prefValues.y);
