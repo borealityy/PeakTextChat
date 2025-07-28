@@ -165,6 +165,7 @@ public class TextChatDisplay : MonoBehaviour {
 
         inputField.onSubmit.AddListener((e) => {
             inputField.text = "";
+            inputField.textComponent.text = "";
             TextChatManager.instance?.SendChatMessage(e);
         });
 
@@ -214,11 +215,11 @@ public class TextChatDisplay : MonoBehaviour {
 
         var mainText = CreateText(textAreaTransform);
         mainText.color = new(0,0,0,1);
-        mainText.richText = false;
 
         inputField.textViewport = textAreaTransform;
         inputField.textComponent = mainText;
         inputField.placeholder = placeholderText;
+        inputField.richText = false;
         inputField.enabled = true;
 
         return inputField;
