@@ -70,4 +70,13 @@ public static class GUIManagerPatch {
             textChatCanvas.gameObject.SetActive(isHUDActive);
         }
     }
+
+    [HarmonyPatch(typeof(GUIManager),"UpdatePaused")]
+    [HarmonyPrefix]
+    public static bool UpdatePausedPrefix(GUIManager __instance) {
+        if (TextChatDisplay.instance?.framesSinceInputBlocked <= 1 && !__instance.pauseMenu.isOpen) {
+            return false;
+        }
+        return true;
+    }
 }

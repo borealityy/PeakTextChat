@@ -38,6 +38,7 @@ public class TextChatDisplay : MonoBehaviour {
     List<ChatMessage> messages = new List<ChatMessage>();
 
     public bool isBlockingInput = false;
+    public int framesSinceInputBlocked = 0;
 
     public static TextChatDisplay instance;
 
@@ -58,6 +59,11 @@ public class TextChatDisplay : MonoBehaviour {
     GameObject currentSelection;
 
     void Update() {
+        if (isBlockingInput)
+            framesSinceInputBlocked = -1;
+        else
+            framesSinceInputBlocked = Mathf.Min(framesSinceInputBlocked + 1,50);
+
         if (!this.gameObject.activeInHierarchy) {
             isBlockingInput = false;
             return;
@@ -220,6 +226,7 @@ public class TextChatDisplay : MonoBehaviour {
         inputField.textComponent = mainText;
         inputField.placeholder = placeholderText;
         inputField.richText = false;
+        inputField.restoreOriginalTextOnEscape = false;
         inputField.enabled = true;
 
         return inputField;
