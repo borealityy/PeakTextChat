@@ -21,6 +21,7 @@ public class PeakTextChatPlugin : BaseUnityPlugin
     public static ConfigEntry<KeyCodeShort> configKey;
     public static ConfigEntry<TextChatPosition> configPos;
     public static ConfigEntry<bool> configRichTextEnabled;
+    public static ConfigEntry<bool> configIMGUI;
 
     private void Awake()
     {
@@ -34,6 +35,13 @@ public class PeakTextChatPlugin : BaseUnityPlugin
                                 KeyCodeShort.Slash,
                                 "The key that activates typing in chat"
                             );
+
+        configIMGUI = Config.Bind<bool>(
+                                "Display",
+                                "UseIMGUI",
+                                false,
+                                "Use IMGUI for the text field (use if you're having problems with typing)"
+            );
 
         configPos = Config.Bind<TextChatPosition>(
                                 "Display",

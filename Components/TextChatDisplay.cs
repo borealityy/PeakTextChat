@@ -18,6 +18,7 @@ public class TextChatDisplay : MonoBehaviour {
     float hideDelay = 40;
     float messageHideDelay = 40;
     float fontSize = 25;
+    bool usingIMGUI = false;
 
     TMP_InputField inputField;
     RectTransform chatLogViewportTransform;
@@ -42,6 +43,9 @@ public class TextChatDisplay : MonoBehaviour {
 
     public static TextChatDisplay instance;
 
+    string imguiFieldString = "";
+    bool imguiTyping = false;
+
     void Awake() {
         instance = this;
     }
@@ -52,6 +56,7 @@ public class TextChatDisplay : MonoBehaviour {
         hideDelay = PeakTextChatPlugin.configHideDelay.Value < 0 ? Mathf.Infinity : PeakTextChatPlugin.configHideDelay.Value;
         fadeOutDelay = Mathf.Min(PeakTextChatPlugin.configFadeDelay.Value < 0 ? Mathf.Infinity : PeakTextChatPlugin.configFadeDelay.Value,hideDelay);
         messageHideDelay = PeakTextChatPlugin.configMessageFadeDelay.Value < 0 ? Mathf.Infinity : PeakTextChatPlugin.configMessageFadeDelay.Value;
+        usingIMGUI = PeakTextChatPlugin.configIMGUI.Value;
         
         var chatSizeConfigSplit = PeakTextChatPlugin.configChatSize.Value.Split(':');
         if (chatSizeConfigSplit.Length >= 2) {
@@ -89,9 +94,14 @@ public class TextChatDisplay : MonoBehaviour {
             }
         }
 
-        if (Input.GetKeyDown(keyInfo.key) && inputField != null && EventSystem.current != null && !GUIManager.instance.windowBlockingInput) {
-            EventSystem.current.SetSelectedGameObject(inputField.gameObject,null);
-            inputField.ActivateInputField();
+        if (!GUIManager.instance.windowBlockingInput && Input.GetKeyDown(keyInfo.key) && inputField != null && EventSystem.current != null) {
+            if (usingIMGUI) {
+                imguiTyping = true;
+                GUI.FocusControl("ptctf");
+            } else {
+                EventSystem.current.SetSelectedGameObject(inputField.gameObject,null);
+                inputField.ActivateInputField();
+            }
             isBlockingInput = true;
         }
 
@@ -327,6 +337,53 @@ public class TextChatDisplay : MonoBehaviour {
             baseTransform.anchorMin = Vector2.one;
             baseTransform.anchoredPosition = new Vector2(-64,-62);
         }
+    }
+
+    void OnGUI() {
+        if (!imguiTyping)
+            return;
+
+        GUI.SetNextControlName("ptctf");
+        var guiStyle = new GUIStyle();
+        guiStyle.fontSize = (int)(fontSize * 0.8f);
+        // var bg = new Texture2D(1,1,TextureFormat.RGBAFloat,false);
+        // bg.SetPixel(0,0,new Color(0,0,0,0.4f));
+        // bg.Apply();
+        // guiStyle.normal.background = bg;
+        guiStyle.clipping = TextClipping.Clip;
+        guiStyle.padding = new RectOffset((int)(fontSize * 0.7f),(int)(fontSize * 0.7f),(int)(fontSize * 0.24f),0);
+        var rect = RectTransformToScreenSpace((RectTransform)inputField.transform);
+        PeakTextChatPlugin.Logger.LogInfo(rect.xMin + " " + rect.yMin);
+        imguiFieldString = GUI.TextArea(rect,imguiFieldString,guiStyle);
+
+        inputField.text = " ";
+
+        if (GUI.GetNameOfFocusedControl() != "ptctf")
+            GUI.FocusControl("ptctf");
+
+        if (imguiFieldString.Contains("\n")) {
+            TextChatManager.instance?.SendChatMessage(imguiFieldString.Replace("\n",""));
+            imguiFieldString = "";
+            GUI.FocusControl("");
+            Event.current.Use();
+            imguiTyping = false;
+            isBlockingInput = false;
+            inputField.text = "";
+        } else if (Event.current.isKey && Event.current.keyCode == KeyCode.Escape) {
+            GUI.FocusControl("");
+            imguiTyping = false;
+            inputField.text = imguiFieldString;
+            isBlockingInput = false;
+            Event.current.Use();
+        }
+    }
+
+    public static Rect RectTransformToScreenSpace(RectTransform transform)
+    {
+        // return RectTransformUtility.PixelAdjustRect(transform,GUIManager.instance.hudCanvas);
+        Vector2 size = Vector2.Scale(transform.rect.size, transform.lossyScale);
+        var pos = new Vector2(transform.position.x,Screen.height - transform.position.y);
+        return new Rect(pos - (size * new Vector2(0.5f,1)), size);
     }
 
     public class ChatMessage {
