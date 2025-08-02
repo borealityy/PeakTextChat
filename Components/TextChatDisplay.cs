@@ -137,7 +137,7 @@ public class TextChatDisplay : MonoBehaviour {
         var shadowImg = shadow.AddComponent<ProceduralImage>();
         shadowImg.color = new Color(0,0,0,0.3f);
         shadowImg.FalloffDistance = 10;
-        shadowImg.SetModifierType<UniformModifier>().Radius = 15;
+        shadowImg.SetModifierType<UniformModifier>().Radius = fontSize / 4 + 10;
 
         // var bgImage = this.gameObject.AddComponent<ProceduralImage>();
         // bgImage.color = new Color(0,0,0,0.6f);
@@ -149,7 +149,7 @@ public class TextChatDisplay : MonoBehaviour {
         chatLogHolderTransform.SetParent(baseTransform,false);
         chatLogHolderTransform.anchorMin = Vector2.zero;
         chatLogHolderTransform.anchorMax = Vector2.one;
-        chatLogHolderTransform.offsetMin = new Vector2(0,fontSize + 20);
+        chatLogHolderTransform.offsetMin = new Vector2(0,fontSize * 2);
         chatLogHolderTransform.offsetMax = Vector2.zero;
         chatLogHolderObj.AddComponent<RectMask2D>();
 
@@ -168,7 +168,7 @@ public class TextChatDisplay : MonoBehaviour {
         inputFieldTransform.anchorMin = new Vector2(0,0);
         inputFieldTransform.anchorMax = new Vector2(1,0);
         inputFieldTransform.offsetMin = new Vector2(5,5);
-        inputFieldTransform.offsetMax = new Vector2(-5,fontSize + 15);
+        inputFieldTransform.offsetMax = new Vector2(-5,fontSize * 1.75f);
         inputFieldTransform.SetParent(baseTransform,false);
 
         var chatLogLayout = chatLogViewportObj.AddComponent<VerticalLayoutGroup>();
@@ -179,7 +179,7 @@ public class TextChatDisplay : MonoBehaviour {
         chatLogLayout.childScaleWidth = false;
         chatLogLayout.childScaleHeight = false;
         chatLogLayout.childAlignment = TextAnchor.LowerCenter;
-        chatLogLayout.padding = new RectOffset(12,12,1,1);
+        chatLogLayout.padding = new RectOffset((int)(fontSize * 0.6f),(int)(fontSize * 0.6f),(int)(fontSize / 20),(int)(fontSize / 20));
         chatLogLayout.spacing = -fontSize / 8;
 
         inputField.onSubmit.AddListener((e) => {
@@ -203,7 +203,7 @@ public class TextChatDisplay : MonoBehaviour {
         var borderImg = border.AddComponent<ProceduralImage>();
         borderImg.color = offWhite;
         borderImg.BorderWidth = 2;
-        borderImg.SetModifierType<UniformModifier>().Radius = 10;
+        borderImg.SetModifierType<UniformModifier>().Radius = fontSize / 4 + 5;
     }
 
     TMP_InputField CreateInputField() {
@@ -215,17 +215,17 @@ public class TextChatDisplay : MonoBehaviour {
         inputField.targetGraphic = inputFieldImg;
         // inputField.transition = Selectable.Transition.None;
         inputFieldImg.color = offWhite;
-        inputFieldImg.SetModifierType<UniformModifier>().Radius = 5;
+        inputFieldImg.SetModifierType<UniformModifier>().Radius = fontSize / 4;
 
         var textAreaObj = new GameObject("Text Area");
         var textAreaTransform = textAreaObj.AddComponent<RectTransform>();
         textAreaTransform.anchorMax = Vector2.one;
         textAreaTransform.anchorMin = Vector2.zero;
-        textAreaTransform.offsetMax = new Vector2(-10,-7);
-        textAreaTransform.offsetMin = new Vector2(10,6);
+        textAreaTransform.offsetMax = new Vector2(-fontSize / 2,-fontSize * 0.3f);
+        textAreaTransform.offsetMin = new Vector2(fontSize / 2,fontSize * 0.3f);
         textAreaTransform.SetParent(inputField.transform,false);
         var textAreaMask = textAreaObj.AddComponent<RectMask2D>();
-        textAreaMask.padding = new Vector4(-8,-5,-8,-5);
+        textAreaMask.padding = new Vector4(-fontSize * 0.4f,-fontSize / 4,-fontSize * 0.4f,-fontSize / 4);
         
         var placeholderText = CreateText(textAreaTransform);
         placeholderText.color = new(0,0,0,0.6f);
@@ -270,7 +270,7 @@ public class TextChatDisplay : MonoBehaviour {
             var tmpText = CreateText(chatLogViewportTransform);
             tmpText.text = message;
             tmpText.color = offWhite;
-            tmpText.lineSpacing = -15;
+            tmpText.lineSpacing = -fontSize * 0.75f;
             var prefValues = tmpText.GetPreferredValues(message,boxSize.x - 24,1000);
 
             ((RectTransform)tmpText.transform).sizeDelta = new Vector2(0,prefValues.y);
