@@ -52,6 +52,19 @@ public class TextChatDisplay : MonoBehaviour {
         hideDelay = PeakTextChatPlugin.configHideDelay.Value < 0 ? Mathf.Infinity : PeakTextChatPlugin.configHideDelay.Value;
         fadeOutDelay = Mathf.Min(PeakTextChatPlugin.configFadeDelay.Value < 0 ? Mathf.Infinity : PeakTextChatPlugin.configFadeDelay.Value,hideDelay);
         messageHideDelay = PeakTextChatPlugin.configMessageFadeDelay.Value < 0 ? Mathf.Infinity : PeakTextChatPlugin.configMessageFadeDelay.Value;
+        
+        var chatSizeConfigSplit = PeakTextChatPlugin.configChatSize.Value.Split(':');
+        if (chatSizeConfigSplit.Length >= 2) {
+            var xString = chatSizeConfigSplit[0].Replace(" ","");
+            var yString = chatSizeConfigSplit[1].Replace(" ","");
+
+            if (float.TryParse(xString,out float chatSizeX) && float.TryParse(yString,out float chatSizeY)) {
+                boxSize = new Vector2(Mathf.Max(chatSizeX,10),Mathf.Max(chatSizeY,10));
+            } else {
+                boxSize = new Vector2(500,300);
+            }
+        }
+
         ResetTimers();
         SetupChatGUI();
     }

@@ -14,6 +14,7 @@ public class PeakTextChatPlugin : BaseUnityPlugin
     Harmony harmony;
 
     public static ConfigEntry<float> configFontSize;
+    public static ConfigEntry<string> configChatSize;
     public static ConfigEntry<float> configMessageFadeDelay;
     public static ConfigEntry<float> configFadeDelay;
     public static ConfigEntry<float> configHideDelay;
@@ -39,6 +40,13 @@ public class PeakTextChatPlugin : BaseUnityPlugin
                                 "ChatPosition",
                                 TextChatPosition.BottomLeft,
                                 "The position of the text chat"
+                            );
+
+        configChatSize = Config.Bind<string>(
+                                "Display",
+                                "ChatSize",
+                                "500:300",
+                                "The size of the text chat (formatted X:Y)"
                             );
 
         configFontSize = Config.Bind<float>(

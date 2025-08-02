@@ -7,7 +7,6 @@ public static class GameUtilsPatch {
     [HarmonyPatch(typeof(GameUtils),"Awake")]
     [HarmonyPostfix]
     public static void AwakePatch(GameUtils __instance) {
-        PeakTextChatPlugin.Logger.LogInfo(__instance.transform.Find("Code"));
         var textChatManagerObj = new GameObject("TextChatManager");
         textChatManagerObj.transform.SetParent(__instance.transform,false);
         textChatManagerObj.AddComponent<TextChatManager>();
