@@ -74,7 +74,7 @@ public static class GUIManagerPatch {
     [HarmonyPatch(typeof(GUIManager),"UpdatePaused")]
     [HarmonyPrefix]
     public static bool UpdatePausedPrefix(GUIManager __instance) {
-        if (TextChatDisplay.instance?.framesSinceInputBlocked <= 1 && !__instance.pauseMenu.isOpen) {
+        if (TextChatDisplay.instance?.framesSinceInputBlocked <= 1 && !__instance.pauseMenu.activeSelf) {
             return false;
         }
         return true;
