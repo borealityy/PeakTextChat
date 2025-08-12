@@ -57,9 +57,9 @@ public static class GUIManagerPatch {
         var textChatObj = new GameObject("TextChat");
         textChatObj.transform.SetParent(textChatCanvas.transform,false);
         textChatObj.AddComponent<TextChatDisplay>();
-        var fogNotif = __instance.hudCanvas?.transform.Find("Notification/Fog")?.gameObject.GetComponent<TMP_Text>();
-        if (fogNotif != null)
-            darumaDropOneFont = fogNotif.font;
+        try {
+            darumaDropOneFont = GUIManager.instance?.itemPromptDrop?.font;
+        } catch {}
     }
 
     [HarmonyPatch(typeof(GUIManager),"LateUpdate")]
