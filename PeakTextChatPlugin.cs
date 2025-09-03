@@ -22,6 +22,8 @@ public class PeakTextChatPlugin : BaseUnityPlugin
     public static ConfigEntry<TextChatPosition> configPos;
     public static ConfigEntry<bool> configRichTextEnabled;
     public static ConfigEntry<bool> configIMGUI;
+    public static ConfigEntry<float> configBgOpacity;
+    public static ConfigEntry<bool> configFrameVisible;
 
     private void Awake()
     {
@@ -60,8 +62,22 @@ public class PeakTextChatPlugin : BaseUnityPlugin
         configFontSize = Config.Bind<float>(
                                 "Display",
                                 "ChatFontSize",
-                                20,
+                                20f,
                                 "Size of the chat's text"
+                            );
+
+        configBgOpacity = Config.Bind<float>(
+                                "Display",
+                                "ChatBackgroundOpacity",
+                                0.3f,
+                                "Opacity of the chat's background/shadow"
+                            );
+
+        configFrameVisible = Config.Bind<bool>(
+                                "Display",
+                                "ChatFrameVisible",
+                                true,
+                                "Whether the frame of the chat box is visible"
                             );
 
         configRichTextEnabled = Config.Bind<bool>(
@@ -74,7 +90,7 @@ public class PeakTextChatPlugin : BaseUnityPlugin
         configFadeDelay = Config.Bind<float>(
                                 "Display",
                                 "ChatFadeDelay",
-                                15,
+                                15f,
                                 "How long before the chat fades out (a negative number means never)"
                             );
 
@@ -82,14 +98,14 @@ public class PeakTextChatPlugin : BaseUnityPlugin
         configHideDelay = Config.Bind<float>(
                                 "Display",
                                 "ChatHideDelay",
-                                40,
+                                40f,
                                 "How long before the chat hides completely (a negative number means never)"
                             );
 
         configMessageFadeDelay = Config.Bind<float>(
                                     "Display",
                                     "ChatMessageHideDelay",
-                                    40,
+                                    40f,
                                     "How long before a chat message disappears (a negative number means never)"
                                 );
 

@@ -145,7 +145,7 @@ public class TextChatDisplay : MonoBehaviour {
         shadowTransform.offsetMin = Vector2.zero;
         shadowTransform.offsetMax = Vector2.zero;
         var shadowImg = shadow.AddComponent<ProceduralImage>();
-        shadowImg.color = new Color(0,0,0,0.3f);
+        shadowImg.color = new Color(0,0,0,PeakTextChatPlugin.configBgOpacity.Value);
         shadowImg.FalloffDistance = 10;
         shadowImg.SetModifierType<UniformModifier>().Radius = fontSize / 4 + 10;
 
@@ -203,17 +203,19 @@ public class TextChatDisplay : MonoBehaviour {
             isBlockingInput = false;
         });
 
-        var border = new GameObject("Border");
-        border.transform.SetParent(baseTransform,false);
-        var borderTransform = border.AddComponent<RectTransform>();
-        borderTransform.anchorMin = Vector2.zero;
-        borderTransform.anchorMax = Vector2.one;
-        borderTransform.offsetMin = Vector2.zero;
-        borderTransform.offsetMax = Vector2.zero;
-        var borderImg = border.AddComponent<ProceduralImage>();
-        borderImg.color = offWhite;
-        borderImg.BorderWidth = 2;
-        borderImg.SetModifierType<UniformModifier>().Radius = fontSize / 4 + 5;
+        if (PeakTextChatPlugin.configFrameVisible.Value) {
+            var border = new GameObject("Border");
+            border.transform.SetParent(baseTransform,false);
+            var borderTransform = border.AddComponent<RectTransform>();
+            borderTransform.anchorMin = Vector2.zero;
+            borderTransform.anchorMax = Vector2.one;
+            borderTransform.offsetMin = Vector2.zero;
+            borderTransform.offsetMax = Vector2.zero;
+            var borderImg = border.AddComponent<ProceduralImage>();
+            borderImg.color = offWhite;
+            borderImg.BorderWidth = 2;
+            borderImg.SetModifierType<UniformModifier>().Radius = fontSize / 4 + 5;
+        }
     }
 
     TMP_InputField CreateInputField() {
