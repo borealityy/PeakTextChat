@@ -22,4 +22,12 @@ public static class InputBlockingPatches {
         }
         return true;
     }
+
+    [HarmonyPatch(typeof(Character),"UpdateVariablesFixed")]
+    [HarmonyPrefix]
+    public static bool UpdateCharacterVariablesPatch(Character __instance) {
+        if (GUIManager.instance?.windowBlockingInput == true)
+            __instance.input.interactIsPressed = false;
+        return true;
+    }
 }
