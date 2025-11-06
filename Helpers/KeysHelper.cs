@@ -68,6 +68,7 @@ public static class KeysHelper {
         new(KeyCodeShort.Comma,KeyCode.Comma,","),
         new(KeyCodeShort.Period,KeyCode.Period,"."),
         new(KeyCodeShort.Slash,KeyCode.Slash,"/"),
+        new(KeyCodeShort.Enter,KeyCode.Return,"Enter"),
         new(KeyCodeShort.Numpad0,KeyCode.Keypad0,"Num0"),
         new(KeyCodeShort.Numpad1,KeyCode.Keypad1,"Num1"),
         new(KeyCodeShort.Numpad2,KeyCode.Keypad2,"Num2"),
@@ -78,6 +79,12 @@ public static class KeysHelper {
         new(KeyCodeShort.Numpad7,KeyCode.Keypad7,"Num7"),
         new(KeyCodeShort.Numpad8,KeyCode.Keypad8,"Num8"),
         new(KeyCodeShort.Numpad9,KeyCode.Keypad9,"Num9"),
+        new(KeyCodeShort.NumpadDivide,KeyCode.KeypadDivide,"Num /"),
+        new(KeyCodeShort.NumpadMultiply,KeyCode.KeypadMultiply,"Num *"),
+        new(KeyCodeShort.NumpadMinus,KeyCode.KeypadMinus,"Num -"),
+        new(KeyCodeShort.NumpadPlus,KeyCode.KeypadPlus,"Num +"),
+        new(KeyCodeShort.NumpadEnter,KeyCode.KeypadEnter,"Num Enter"),
+        new(KeyCodeShort.NumpadPeriod,KeyCode.KeypadPeriod,"Num ."),
     };
 }
 
@@ -129,6 +136,7 @@ public enum KeyCodeShort {
     Comma,
     Period,
     Slash,
+    Enter,
     Numpad0,
     Numpad1,
     Numpad2,
@@ -138,5 +146,11 @@ public enum KeyCodeShort {
     Numpad6,
     Numpad7,
     Numpad8,
-    Numpad9
+    Numpad9,
+    NumpadDivide,
+    NumpadMultiply,
+    NumpadMinus,
+    NumpadPlus,
+    NumpadEnter,
+    NumpadPeriod,
 }
