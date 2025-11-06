@@ -65,17 +65,25 @@ public static class GUIManagerPatch {
     [HarmonyPatch(typeof(GUIManager),"LateUpdate")]
     [HarmonyPostfix]
     public static void LateUpdatePostfix(GUIManager __instance) {
-        if (isHUDActive != __instance.hudCanvas.gameObject.activeInHierarchy) {
-            isHUDActive = __instance.hudCanvas.gameObject.activeInHierarchy;
-            textChatCanvas.gameObject.SetActive(isHUDActive);
+        try {
+            if (isHUDActive != __instance.hudCanvas.gameObject.activeInHierarchy) {
+                isHUDActive = __instance.hudCanvas.gameObject.activeInHierarchy;
+                textChatCanvas.gameObject.SetActive(isHUDActive);
+            }
+        } catch {
+            PeakTextChatPlugin.Logger.LogError("guimanager late update patch failed!! rhwrhrhwhrhwrhwhrawhhrhwhrwhrhrwrh");
         }
     }
 
     [HarmonyPatch(typeof(GUIManager),"UpdatePaused")]
     [HarmonyPrefix]
     public static bool UpdatePausedPrefix(GUIManager __instance) {
-        if (TextChatDisplay.instance?.framesSinceInputBlocked <= 1 && !__instance.pauseMenu.activeSelf) {
-            return false;
+        try {
+            if (TextChatDisplay.instance?.framesSinceInputBlocked <= 1 && !__instance.pauseMenu.activeSelf) {
+                return false;
+            }
+        } catch {
+            PeakTextChatPlugin.Logger.LogError("update paused patch failed!! AAAAAAAA");
         }
         return true;
     }

@@ -48,9 +48,11 @@ public class TextChatManager : MonoBehaviour {
     public void SendChatMessage(string message) {
         if (!string.IsNullOrWhiteSpace(message)) {
             bool isDead = false;
-            if (Character.localCharacter?.data != null) {
-                isDead = Character.localCharacter.data.dead;
-            }
+            try {
+                if (Character.localCharacter?.data != null) {
+                    isDead = Character.localCharacter.data.dead;
+                }
+            } catch {}
 
             object[] payload = {
                 PhotonNetwork.LocalPlayer.NickName,

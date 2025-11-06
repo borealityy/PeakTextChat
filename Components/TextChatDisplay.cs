@@ -94,7 +94,7 @@ public class TextChatDisplay : MonoBehaviour {
             }
         }
 
-        if (!GUIManager.instance.windowBlockingInput && Input.GetKeyDown(keyInfo.key) && inputField != null && EventSystem.current != null) {
+        if (!InputBlockingPatches.IsInputBlocked() && Input.GetKeyDown(keyInfo.key) && inputField != null && EventSystem.current != null) {
             if (usingIMGUI) {
                 imguiTyping = true;
                 GUI.FocusControl("ptctf");
